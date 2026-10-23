@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Demo Commerce Group: multi-store analytics (demo)
 
-## Getting Started
+A clickable proof of concept for a multi-store Shopify + Meta Ads + Google Ads analytics dashboard.
+**All data is mock data** for a fictional company ("Demo Commerce Group") with three fictional stores: Glow Lab, Vita Core and Pure Skin.
 
-First, run the development server:
+Stack: Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui-style components (Radix) · Recharts.
+
+## Screens
+
+| Route | What it shows |
+| --- | --- |
+| `/` | Overview: revenue, ad spend, blended vs Meta-reported ROAS, profit, orders, AOV with period-over-period change; revenue vs spend chart; per-store table |
+| `/creatives` | Creative & Team: **editable winner rule** (ROAS / min spend / window) that recalculates win rates live; strategist leaderboard with rank movement; creative table with history drill-down; campaign and ad set roll-ups |
+| `/insights` | Angles & Insights: win rate and ROAS by ad angle, angle × store matrix, 3 insight cards computed from the data |
+| `/about` | Data plan one-pager (prints to a single A4 page) |
+
+Store and date filters (7d / 30d / 90d) and the winner rule carry across screens.
+
+## Data
+
+`src/data/seed.ts` generates 180 days of daily store data and 124 creatives from a fixed seed, so the numbers are identical on every load.
+All metrics are derived from those daily rows in `src/lib/metrics.ts`:
+
+- Blended ROAS = Shopify revenue ÷ (Meta + Google spend)
+- Profit = revenue − COGS − ad spend − fees
+- Winner = within the first *N* days, spend ≥ €X and Meta ROAS ≥ Y. Creatives still inside the window are "Testing"; the rest are "Loser". Win rate = winners ÷ decided creatives.
+- Strategist, angle, product and version are parsed from the ad name: `strategist_angle_product_version` (e.g. `AH_ugc-pain_serum_v3`).
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Vercel (recommended):** push this repo to GitHub → vercel.com/new → import the repo → Deploy. No settings or environment variables needed.
+Or from a terminal: `npx vercel --prod`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Any static host:** `npm run export` writes a static site to `./out` (upload that folder to Netlify Drop, Cloudflare Pages, GitHub Pages at a root domain, etc.).
 
-## Learn More
+## Screenshots and PDF
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+With the app running on port 3000: `npm run shots` writes screenshots and `data-plan-one-pager.pdf` to `./deliverables`.
+(The script points Playwright at a preinstalled Chromium; change `executablePath` in `scripts/shots.mjs` or remove it to use Playwright's own browser.)
