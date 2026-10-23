@@ -44,3 +44,4 @@ next-env.d.ts
 /deliverables/*.zip
 /deliverables/*.bundle
 /deliverables/*.tar.gz
+/artifact/dist

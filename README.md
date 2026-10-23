@@ -44,3 +44,5 @@ Or from a terminal: `npx vercel --prod`.
 
 With the app running on port 3000: `npm run shots` writes screenshots and `data-plan-one-pager.pdf` to `./deliverables`.
 (The script points Playwright at a preinstalled Chromium; change `executablePath` in `scripts/shots.mjs` or remove it to use Playwright's own browser.)
+
+**Single-file version:** `npm run bundle` writes `artifact/dist/demo-commerce-analytics.html`, the whole dashboard in one self-contained HTML file (hash routes `#overview`, `#creatives`, `#insights`, `#plan`). It's useful for hosts that only take a single page.
